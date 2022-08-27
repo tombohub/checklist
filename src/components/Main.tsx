@@ -27,6 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
+import { useQuery } from "@tanstack/react-query";
 import { getTodoList, addTask, updateTask } from "../data/api";
 import { type Task } from "../data/DTOs";
 import { useState, useRef, useEffect } from "react";
@@ -60,21 +61,18 @@ const theme = extendTheme({
 });
 
 function Main() {
-  const [todoList, setTodoList] = useState<Task[]>([]);
+  //   const [todoList, setTodoList] = useState<Task[]>([]);
   const [listUpdatedCounter, setListUpdatedCounter] = useState(0);
   const [todoListTitle, setTodoListTitle] = useState("");
   const [newTaskName, setNewTaskName] = useState("");
   const [addTaskIsError, setAddTaskIsError] = useState(false);
 
+  const query = useQuery(["todoList"], getTodoList);
+
   const addTaskInputRef = useRef(null);
   const todoListTitleInputRef = useRef(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const completedTasks = todoList.filter(task => task.is_completed === true);
-  const notCompletedTasks = todoList.filter(
-    task => task.is_completed === false
-  );
 
   function todoListSorter(a: Task, b: Task) {
     return a.id - b.id;
@@ -113,23 +111,23 @@ function Main() {
     todoListTitleInputRef.current.blur();
   }
 
-  useEffect(() => {
-    async function fetch() {
-      const data = await getTodoList();
-      data && setTodoList(data);
-    }
-
-    fetch().catch(err => console.error(err));
-  }, [listUpdatedCounter]);
-
   // useEffect(() => {
-  //   async function fetch() {
+  //     async function fetch() {
   //     const data = await getTodoList();
   //     data && setTodoList(data);
-  //   }
+  //     }
 
-  //   fetch().catch(err => console.error(err));
+  //     fetch().catch(err => console.error(err));
   // }, [listUpdatedCounter]);
+
+  if (query.isLoading) return "Loading...";
+  if (query.error) return "error: " + query.error;
+
+  let todoList: Task[] | null = [];
+  if (query.isSuccess) {
+    todoList = query.data;
+    console.log(todoList);
+  }
 
   return (
     <>
@@ -149,24 +147,27 @@ function Main() {
         </Box>
 
         <Stack direction={"column"} padding={"4"} spacing={"4"}>
-          {todoList.sort(todoListSorter).map(task => (
-            <>
-              <Checkbox
-                key={task.id}
-                isChecked={task.is_completed}
-                onChange={e => handleCheckboxChange(e.target.checked, task.id)}
-              >
-                <Text
-                  textDecorationLine={
-                    task.is_completed ? "line-through" : "none"
+          {todoList &&
+            todoList.sort(todoListSorter).map(task => (
+              <>
+                <Checkbox
+                  key={task.id}
+                  isChecked={task.is_completed}
+                  onChange={e =>
+                    handleCheckboxChange(e.target.checked, task.id)
                   }
-                  fontSize={"xl"}
                 >
-                  {task.task_name}
-                </Text>
-              </Checkbox>
-            </>
-          ))}
+                  <Text
+                    textDecorationLine={
+                      task.is_completed ? "line-through" : "none"
+                    }
+                    fontSize={"xl"}
+                  >
+                    {task.task_name}
+                  </Text>
+                </Checkbox>
+              </>
+            ))}
         </Stack>
 
         {/* Floating button */}
@@ -214,12 +215,10 @@ function Main() {
 
       <pre>
         new task name: {newTaskName}
-        <h4>Completed:</h4>
-        {JSON.stringify(completedTasks, null, 2)}
-        <h4>Not Completed:</h4>
-        {JSON.stringify(notCompletedTasks, null, 2)}
         <h4>full list:</h4>
         {JSON.stringify(todoList, null, 2)}
+        <h4>query data:</h4>
+        {JSON.stringify(query.data, null, 2)}
       </pre>
     </>
   );
