@@ -1,13 +1,13 @@
+import { ChakraProvider } from "@chakra-ui/react";
+import { theme } from "./ui/chakraTheme";
 import Main from "./components/Main";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
-  const querClient = new QueryClient();
   return (
     <>
-      <QueryClientProvider client={querClient}>
+      <ChakraProvider theme={theme}>
         <Main />
-      </QueryClientProvider>
+      </ChakraProvider>
     </>
   );
 }
