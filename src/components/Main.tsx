@@ -27,12 +27,13 @@ import {
 import { AddIcon } from "@chakra-ui/icons";
 import { theme } from "../ui/chakraTheme";
 
+import Task from "./Task";
 import { getTodoList, addTask, updateTask } from "../data/api";
-import { type Task } from "../data/DTOs";
+import { type TaskDTO } from "../data/DTOs";
 import { useState, useRef, useEffect } from "react";
 
 function Main() {
-  const [todoList, setTodoList] = useState<Task[]>([]);
+  const [todoList, setTodoList] = useState<TaskDTO[]>([]);
   const [listUpdatedCounter, setListUpdatedCounter] = useState(0);
   const [todoListTitle, setTodoListTitle] = useState("");
   const [newTaskName, setNewTaskName] = useState("");
@@ -42,13 +43,8 @@ function Main() {
   const addTaskInputRef = useRef(null);
   const todoListTitleInputRef = useRef(null);
 
-  function todoListSorter(a: Task, b: Task) {
+  function todoListSorter(a: TaskDTO, b: TaskDTO) {
     return a.id - b.id;
-  }
-
-  function handleCheckboxChange(isSelected: boolean, taskId: number) {
-    updateTask(taskId, isSelected);
-    setListUpdatedCounter(listUpdatedCounter + 1);
   }
 
   function handleSaveTask() {
@@ -88,7 +84,7 @@ function Main() {
     }
 
     fetch().catch(err => console.error(err));
-  }, [listUpdatedCounter]);
+  }, []);
 
   return (
     <>
@@ -110,20 +106,7 @@ function Main() {
         {todoList &&
           todoList.sort(todoListSorter).map(task => (
             <>
-              <Checkbox
-                key={task.id}
-                isChecked={task.is_completed}
-                onChange={e => handleCheckboxChange(e.target.checked, task.id)}
-              >
-                <Text
-                  textDecorationLine={
-                    task.is_completed ? "line-through" : "none"
-                  }
-                  fontSize={"xl"}
-                >
-                  {task.task_name}
-                </Text>
-              </Checkbox>
+              <Task task={task} todoList={todoList} setTodoList={setTodoList} />
             </>
           ))}
       </Stack>

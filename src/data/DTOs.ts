@@ -1,7 +1,7 @@
 /**
  * Single task inside todo list
  */
-interface Task {
+interface TaskDTO {
     /**
      * id from database
      */
@@ -10,4 +10,4 @@ interface Task {
     is_completed: boolean;
 }
 
-export { type Task }
+export { type TaskDTO }
