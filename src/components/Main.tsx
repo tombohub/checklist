@@ -39,7 +39,6 @@ function Main() {
   const [newTaskName, setNewTaskName] = useState("");
   const [addTaskIsError, setAddTaskIsError] = useState(false);
   const [isAddingItem, setIsAddingItem] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const addTaskInputRef = useRef(null);

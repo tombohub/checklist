@@ -5,16 +5,18 @@ const supabaseUrl = 'https://mnhapnxuhheksdggtwim.supabase.co'
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
 const supabase = createClient(supabaseUrl, supabaseKey)
 
+const db_tables = { todo_lists: 'todo_lists' }
+
 async function getTodoList() {
     let { data: todo_lists, error } = await supabase
-        .from<TaskDTO>('todo_lists')
+        .from<TaskDTO>(db_tables.todo_lists)
         .select('*')
     return todo_lists
 }
 
 async function addTask(taskName: string) {
     const { data, error } = await supabase
-        .from<TaskDTO>('todo_lists')
+        .from<TaskDTO>(db_tables.todo_lists)
         .insert([
             { task_name: taskName },
         ])
@@ -25,7 +27,7 @@ async function addTask(taskName: string) {
 
 async function updateTask(taskId: number, isCompleted: boolean) {
     const { data, error } = await supabase
-        .from<TaskDTO>('todo_lists')
+        .from<TaskDTO>(db_tables.todo_lists)
         .update({ is_completed: isCompleted })
         .eq('id', taskId)
     if (data === null) throw 'No task is updated'
@@ -33,4 +35,11 @@ async function updateTask(taskId: number, isCompleted: boolean) {
     return data[0]
 }
 
-export { getTodoList, addTask, updateTask }
+async function changeItemName(newName: string, taskId: number) {
+    const { data, error } = await supabase
+        .from<TaskDTO>(db_tables.todo_lists)
+        .update({ task_name: newName })
+        .eq('id', taskId)
+}
+
+export { getTodoList, addTask, updateTask, changeItemName }

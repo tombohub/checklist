@@ -1,6 +1,21 @@
-import { Checkbox, Text, Spinner, Flex, Stack, HStack } from "@chakra-ui/react";
+import {
+  Checkbox,
+  Text,
+  Spinner,
+  Flex,
+  Stack,
+  HStack,
+  Spacer,
+  IconButton,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  useEditableControls,
+  Input,
+} from "@chakra-ui/react";
+import { DeleteIcon, EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { useState } from "react";
-import { updateTask } from "../data/api";
+import { updateTask, changeItemName } from "../data/api";
 import { type TaskDTO } from "../data/DTOs";
 
 interface ChecklistItemProps {
@@ -50,14 +65,68 @@ function ChecklistItem({
             onChange={e => handleCheckboxChange(e.target.checked, task.id)}
           />
         )}
-        <Text
+        {/* <Text
           textDecorationLine={task.is_completed ? "line-through" : "none"}
           fontSize={"xl"}
         >
           {task.task_name}
-        </Text>
+        </Text> */}
+        <Editable
+          defaultValue={task.task_name}
+          display="flex"
+          isPreviewFocusable={false}
+          width={"full"}
+          onSubmit={newName => changeItemName(newName, task.id)}
+          submitOnBlur={false}
+        >
+          <EditablePreview
+            textDecorationLine={task.is_completed ? "line-through" : "none"}
+            fontSize="xl"
+            flexGrow={1}
+          />
+          <Input as={EditableInput} variant="flushed" fontSize={"xl"} />
+          <EditableControls />
+        </Editable>
+        <IconButton
+          aria-label="delete checklist item"
+          icon={<DeleteIcon />}
+          variant="link"
+        />
       </HStack>
     </>
+  );
+}
+
+function EditableControls() {
+  const {
+    isEditing,
+    getEditButtonProps,
+    getCancelButtonProps,
+    getSubmitButtonProps,
+  } = useEditableControls();
+
+  return isEditing ? (
+    <>
+      <IconButton
+        icon={<CheckIcon />}
+        {...getSubmitButtonProps()}
+        aria-label="save edit"
+        variant={"link"}
+      />
+      <IconButton
+        icon={<CloseIcon />}
+        {...getCancelButtonProps()}
+        aria-label="cancel edit"
+        variant={"link"}
+      />
+    </>
+  ) : (
+    <IconButton
+      aria-label="delete checklist item"
+      icon={<EditIcon />}
+      variant="link"
+      {...getEditButtonProps()}
+    />
   );
 }
 
