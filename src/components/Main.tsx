@@ -27,7 +27,7 @@ import {
 import { AddIcon } from "@chakra-ui/icons";
 import { theme } from "../ui/chakraTheme";
 
-import Task from "./Task";
+import ChecklistItem from "./ChecklistItem";
 import { getTodoList, addTask, updateTask } from "../data/api";
 import { type TaskDTO } from "../data/DTOs";
 import { useState, useRef, useEffect } from "react";
@@ -38,6 +38,8 @@ function Main() {
   const [todoListTitle, setTodoListTitle] = useState("");
   const [newTaskName, setNewTaskName] = useState("");
   const [addTaskIsError, setAddTaskIsError] = useState(false);
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const addTaskInputRef = useRef(null);
@@ -47,16 +49,18 @@ function Main() {
     return a.id - b.id;
   }
 
-  function handleSaveTask() {
+  async function handleSaveTask() {
     if (newTaskName === "") {
       setAddTaskIsError(true);
       addTaskInputRef.current.focus();
       return;
     }
 
-    addTask(newTaskName);
+    setIsAddingItem(true);
+    const newItem = await addTask(newTaskName);
+    setTodoList([...todoList, newItem]);
+    setIsAddingItem(false);
     setNewTaskName("");
-    setListUpdatedCounter(listUpdatedCounter + 1);
     onClose();
   }
 
@@ -84,7 +88,7 @@ function Main() {
     }
 
     fetch().catch(err => console.error(err));
-  }, []);
+  }, [listUpdatedCounter]);
 
   return (
     <>
@@ -106,7 +110,14 @@ function Main() {
         {todoList &&
           todoList.sort(todoListSorter).map(task => (
             <>
-              <Task task={task} todoList={todoList} setTodoList={setTodoList} />
+              <ChecklistItem
+                task={task}
+                todoList={todoList}
+                setTodoList={setTodoList}
+                listUpdatedCounter={listUpdatedCounter}
+                setListUpdatedCounter={setListUpdatedCounter}
+                key={task.id}
+              />
             </>
           ))}
       </Stack>
@@ -143,10 +154,16 @@ function Main() {
             </ModalBody>
             <ModalFooter>
               <Stack direction={"row"}>
-                <Button onClick={handleSaveTask} type="submit">
-                  Save
+                <Button onClick={handleModalClose} variant="ghost">
+                  Cancel
                 </Button>
-                <Button onClick={handleModalClose}>Cancel</Button>
+                <Button
+                  onClick={handleSaveTask}
+                  type="submit"
+                  isLoading={isAddingItem}
+                >
+                  Add
+                </Button>
               </Stack>
             </ModalFooter>
           </form>

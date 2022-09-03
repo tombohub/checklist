@@ -18,6 +18,9 @@ async function addTask(taskName: string) {
         .insert([
             { task_name: taskName },
         ])
+    if (data === null) throw 'No item is inserted'
+    if (data.length > 1) throw 'More than one task is inserted'
+    return data[0]
 }
 
 async function updateTask(taskId: number, isCompleted: boolean) {
