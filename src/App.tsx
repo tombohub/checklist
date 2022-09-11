@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { theme } from "./ui/chakraTheme";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
