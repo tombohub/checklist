@@ -1,4 +1,4 @@
-import Layout from "./Layout";
+import Layout from "../components/Layout";
 import { useAtom } from "jotai";
 import { checklistItemsAtom, checklistTitleAtom } from "../data/store";
 import { useEffect } from "react";

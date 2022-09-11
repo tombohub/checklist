@@ -1,18 +1,3 @@
-import {
-  Input,
-  Stack,
-  Box,
-  IconButton,
-  Modal,
-  ModalContent,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-  Button,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-} from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { useAtom } from "jotai";
 import {
@@ -23,7 +8,7 @@ import {
 import { getChecklistItemsApi, getChecklistTitleApi } from "../data/api";
 
 import { useEffect } from "react";
-import Layout from "./Layout";
+import Layout from "../components/Layout";
 
 type Params = {
   uid: string;

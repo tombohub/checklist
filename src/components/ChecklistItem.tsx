@@ -18,6 +18,7 @@ import { DeleteIcon, EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { updateItemApi, changeItemNameApi, deleteItemApi } from "../data/api";
 import { checklistItemsAtom, listUpdatedCounterAtom } from "../data/store";
+import { deleteItemHandler, checkItemHandler } from "../data/eventHandlers";
 import { SetStateAction, useAtom } from "jotai";
 import { type ItemModel } from "../data/DTOs";
 
@@ -39,21 +40,18 @@ function ChecklistItem({
     listUpdatedCounterAtom
   );
 
-  async function handleCheckboxChange(isSelected: boolean, itemId: number) {
+  async function handleCheckboxChange(isChecked: boolean, itemId: number) {
     setIsUpdating(true);
 
     // use server state update only if it's not new checklist
-    const updatedItem: ItemModel = isNewChecklist
-      ? {
-          id: item.id,
-          is_completed: isSelected,
-          task_name: item.task_name,
-        }
-      : await updateItemApi(itemId, isSelected);
-
+    await checkItemHandler(itemId, isChecked);
     // update on client because checkbox is lagging if waiting for server
     const newChecklist = checklistItems.map(item => {
-      return item.id === itemId ? updatedItem : item;
+      if (item.id === itemId) {
+        item.is_completed = isChecked;
+        return item;
+      }
+      return item;
     });
     setChecklistItems(newChecklist);
 
@@ -61,8 +59,16 @@ function ChecklistItem({
     setIsUpdating(false);
   }
 
-  async function handleDeleteItem() {
-    await deleteItemApi(item.id);
+  async function handleDeleteItem(itemId: number) {
+    setIsUpdating(true);
+    await deleteItemHandler(itemId);
+
+    // update on client because checkbox is lagging if waiting for server
+    const newChecklist = checklistItems.filter(item => item.id !== itemId);
+    setChecklistItems(newChecklist);
+
+    setIsUpdating(false);
+    setListUpdatedCounter(listUpdatedCounter + 1);
   }
 
   return (
@@ -102,6 +108,7 @@ function ChecklistItem({
             aria-label="delete checklist item"
             icon={<DeleteIcon />}
             variant="link"
+            onClick={e => handleDeleteItem(item.id)}
           />
         </HStack>
       </Fade>

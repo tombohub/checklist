@@ -1,9 +1,8 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { theme } from "./ui/chakraTheme";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import Home from "./components/Home";
-import Checklist from "./components/Checklist";
-import Layout from "./components/Layout";
+import Home from "./pages/Home";
+import Checklist from "./pages/Checklist";
 
 function App() {
   return (

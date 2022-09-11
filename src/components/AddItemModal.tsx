@@ -22,7 +22,11 @@ import {
   checklistTitleAtom,
   listUpdatedCounterAtom,
 } from "../data/store";
-import { addFirstItemHandler, addItemHandler } from "../data/eventHandlers";
+import {
+  addFirstItemHandler,
+  addItemHandler,
+  deleteItemHandler,
+} from "../data/eventHandlers";
 import { AddIcon } from "@chakra-ui/icons";
 
 interface AddItemModalProps {
@@ -94,7 +98,7 @@ function AddItemModal({ isFirstItem, uid }: AddItemModalProps) {
       {/* Floating button */}
 
       <AddFirstItemButton onClick={onOpen} hidden={!isFirstItem} />
-      <Fade in={checklistItems.length > 0}>
+      <Fade in={!isFirstItem}>
         <IconButton
           onClick={onOpen}
           aria-label="add item"
