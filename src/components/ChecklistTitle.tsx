@@ -11,7 +11,7 @@ interface ChecklistTitleProps {
 
 function ChecklistTitle({ uid }: ChecklistTitleProps) {
   const [title, setTitle] = useAtom(checklistTitleAtom);
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleOnBlur() {
     if (title && uid) {
@@ -24,10 +24,9 @@ function ChecklistTitle({ uid }: ChecklistTitleProps) {
   }
 
   function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
-    handleOnBlur();
     e.preventDefault();
     e.stopPropagation();
-    inputRef.current.blur();
+    if (inputRef.current) inputRef.current.blur();
   }
 
   return (
@@ -40,6 +39,7 @@ function ChecklistTitle({ uid }: ChecklistTitleProps) {
           onChange={e => setTitle(e.target.value)}
           value={title ? title : ""}
           ref={inputRef}
+          onBlur={handleOnBlur}
         />
       </form>
     </>
