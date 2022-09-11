@@ -76,34 +76,35 @@ function ChecklistItem({
       <Fade in>
         <HStack>
           {isUpdating ? (
-            <Spinner />
+            <>
+              <Spinner />
+            </>
           ) : (
-            <Checkbox
-              isDisabled={isUpdating}
-              key={item.id}
-              isChecked={item.is_completed}
-              onChange={e => handleCheckboxChange(e.target.checked, item.id)}
-            >
-              <Editable
-                defaultValue={item.task_name}
-                display="flex"
-                isPreviewFocusable={false}
-                width={"full"}
-                onSubmit={newName => changeItemNameApi(newName, item.id)}
-                submitOnBlur={false}
-              >
-                <EditablePreview
-                  textDecorationLine={
-                    item.is_completed ? "line-through" : "none"
-                  }
-                  fontSize="xl"
-                  flexGrow={1}
-                />
-                <Input as={EditableInput} variant="flushed" fontSize={"xl"} />
-                <EditableControls />
-              </Editable>
-            </Checkbox>
+            <>
+              <Checkbox
+                key={item.id}
+                isChecked={item.is_completed}
+                onChange={e => handleCheckboxChange(e.target.checked, item.id)}
+              />
+            </>
           )}
+          <Editable
+            defaultValue={item.task_name}
+            display="flex"
+            isPreviewFocusable={false}
+            width={"full"}
+            onSubmit={newName => changeItemNameApi(newName, item.id)}
+            submitOnBlur={false}
+          >
+            <EditablePreview
+              textDecorationLine={item.is_completed ? "line-through" : "none"}
+              fontSize="xl"
+              flexGrow={1}
+              onClick={e => (item.is_completed = !item.is_completed)}
+            />
+            <Input as={EditableInput} variant="flushed" fontSize={"xl"} />
+            <EditableControls />
+          </Editable>
           <IconButton
             aria-label="delete checklist item"
             icon={<DeleteIcon />}

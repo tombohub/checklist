@@ -124,7 +124,7 @@ function AddItemModal({ isFirstItem, uid }: AddItemModalProps) {
                   autoComplete={"off"}
                 />
                 <FormErrorMessage>
-                  Can't read your mind. Please name a task
+                  Can't read your mind. Please name an item
                 </FormErrorMessage>
               </FormControl>
             </ModalBody>

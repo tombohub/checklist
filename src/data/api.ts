@@ -41,7 +41,10 @@ export async function changeItemNameApi(newName: string, taskId: number) {
     .eq("id", taskId);
 }
 
-export async function changeChecklistTitleApi(newTitle: string, uid: string) {
+export async function changeChecklistTitleApi(
+  newTitle: string | null,
+  uid: string
+) {
   const { data, error } = await supabase
     .from<ChecklistModel>(db_tables.checklists)
     .update({ title: newTitle })

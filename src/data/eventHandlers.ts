@@ -24,7 +24,10 @@ export async function addItemHandler(itemName: string, uid: string) {
   await addItemApi(itemName, uid);
 }
 
-export async function changeChecklistTitleHandler(title: string, uid: string) {
+export async function changeChecklistTitleHandler(
+  title: string | null,
+  uid: string
+) {
   await changeChecklistTitleApi(title, uid);
 }
 

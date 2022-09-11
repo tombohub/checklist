@@ -1,5 +1,6 @@
-import { Input } from "@chakra-ui/react";
+import { Button, Input } from "@chakra-ui/react";
 import { useAtom } from "jotai";
+import { useRef } from "react";
 import { changeChecklistTitleHandler } from "../data/eventHandlers";
 import { checklistTitleAtom } from "../data/store";
 
@@ -10,30 +11,35 @@ interface ChecklistTitleProps {
 
 function ChecklistTitle({ uid }: ChecklistTitleProps) {
   const [title, setTitle] = useAtom(checklistTitleAtom);
+  const inputRef = useRef(null);
 
   async function handleOnBlur() {
     if (title && uid) {
       await changeChecklistTitleHandler(title, uid);
+    } else if (!title && uid) {
+      await changeChecklistTitleHandler(null, uid);
     } else {
-      console.error("title and uid are not set");
+      console.log("no title change");
     }
   }
 
   function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
+    handleOnBlur();
     e.preventDefault();
     e.stopPropagation();
+    inputRef.current.blur();
   }
 
   return (
     <>
-      <form onSubmit={handleOnSubmit}>
+      <form onSubmit={handleOnSubmit} noValidate>
         <Input
           placeholder="Title..."
           variant={"flushed"}
           fontSize={"3xl"}
           onChange={e => setTitle(e.target.value)}
           value={title ? title : ""}
-          onBlur={handleOnBlur}
+          ref={inputRef}
         />
       </form>
     </>
