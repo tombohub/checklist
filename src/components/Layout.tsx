@@ -19,7 +19,7 @@ interface LayoutProps {
   checklistItems: ItemModel[];
   setChecklistItems: (update: SetStateAction<ItemModel[]>) => void;
   isFirstItem: boolean;
-  uid?: string;
+  uid?: string | undefined;
 }
 
 function Layout({
@@ -29,13 +29,6 @@ function Layout({
   isFirstItem,
   uid,
 }: LayoutProps) {
-  /**
-   * Counter used to trigger checklist fetch from server useeffect everytime checklist is updated
-   */
-  const [listUpdatedCounter, setListUpdatedCounter] = useAtom(
-    listUpdatedCounterAtom
-  );
-
   function todoListSorter(a: ItemModel, b: ItemModel) {
     return a.id - b.id;
   }
@@ -43,7 +36,7 @@ function Layout({
   return (
     <>
       <Box padding={"2"} marginTop={"4"}>
-        <ChecklistTitle />
+        <ChecklistTitle uid={uid} isFirstItem={isFirstItem} />
       </Box>
 
       <Stack direction={"column"} padding={"4"} spacing={"4"}>

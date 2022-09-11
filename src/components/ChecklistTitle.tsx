@@ -1,22 +1,41 @@
-import {
-  Editable,
-  EditableInput,
-  EditablePreview,
-  useEditableControls,
-  Input,
-  IconButton,
-} from "@chakra-ui/react";
-import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
-import { changeChecklistTitleApi } from "../data/api";
-import { useState } from "react";
+import { Input } from "@chakra-ui/react";
+import { useAtom } from "jotai";
+import { changeChecklistTitleHandler } from "../data/eventHandlers";
+import { checklistTitleAtom } from "../data/store";
 
-function ChecklistTitle() {
+interface ChecklistTitleProps {
+  uid: string | undefined;
+  isFirstItem: boolean;
+}
+
+function ChecklistTitle({ uid }: ChecklistTitleProps) {
+  const [title, setTitle] = useAtom(checklistTitleAtom);
+
+  async function handleOnBlur() {
+    if (title && uid) {
+      await changeChecklistTitleHandler(title, uid);
+    } else {
+      console.error("title and uid are not set");
+    }
+  }
+
+  function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
   return (
     <>
-      <Editable defaultValue="Title..." borderBottom={"1px solid gray"}>
-        <EditablePreview fontSize={"3xl"} color={"GrayText"} />
-        <EditableInput fontSize={"3xl"} />
-      </Editable>
+      <form onSubmit={handleOnSubmit}>
+        <Input
+          placeholder="Title..."
+          variant={"flushed"}
+          fontSize={"3xl"}
+          onChange={e => setTitle(e.target.value)}
+          value={title ? title : ""}
+          onBlur={handleOnBlur}
+        />
+      </form>
     </>
   );
 }

@@ -13,25 +13,16 @@ import {
   FormLabel,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAtom } from "jotai";
 import {
   checklistItemsAtom,
   listUpdatedCounterAtom,
-  isFirstItemAtom,
-  checklistUidAtom,
+  checklistTitleAtom,
 } from "../data/store";
-import ChecklistItem from "./ChecklistItem";
-import ChecklistTitle from "./ChecklistTitle";
-import {
-  getChecklistItemsApi,
-  addItemApi,
-  createChecklistApi,
-} from "../data/api";
-import { type ItemModel } from "../data/DTOs";
+import { getChecklistItemsApi, getChecklistTitleApi } from "../data/api";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect } from "react";
 import Layout from "./Layout";
 
 type Params = {
@@ -41,8 +32,19 @@ type Params = {
 function Checklist() {
   const { uid } = useParams<Params>();
   const [checklistItems, setChecklistItems] = useAtom(checklistItemsAtom);
+  const [checklistTitle, setChecklistTitle] = useAtom(checklistTitleAtom);
   const [listUpdatedCounter] = useAtom(listUpdatedCounterAtom);
-  const [checklistUid, setChecklistUid] = useAtom(checklistUidAtom);
+
+  useEffect(() => {
+    async function fetch() {
+      if (uid) {
+        const data = await getChecklistTitleApi(uid);
+        data && setChecklistTitle(data[0].title);
+      }
+    }
+
+    fetch().catch(err => console.error(err));
+  }, []);
 
   useEffect(() => {
     async function fetch() {
@@ -54,6 +56,7 @@ function Checklist() {
 
     fetch().catch(err => console.error(err));
   }, [listUpdatedCounter]);
+
   return (
     <>
       <Layout
